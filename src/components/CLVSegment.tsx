@@ -1,64 +1,77 @@
 "use client";
 
 import {
-  BarChart,
+  ComposedChart,
   Bar,
+  Line,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
   Legend,
+  ResponsiveContainer,
 } from "recharts";
 
 interface CLVData {
   segment: string;
-  customers: number;
   avg_clv: number;
-  avg_monthly: number;
   churn_pct: number;
+  customers: number;
 }
 
 interface CLVSegmentProps {
   data: CLVData[];
+  loading: boolean;
 }
 
-export default function CLVSegment({ data }: CLVSegmentProps) {
+export default function CLVSegment({ data, loading }: CLVSegmentProps) {
+  if (loading) {
+    return <div className="h-[400px] bg-[#F0FFF4] animate-pulse rounded-xl" />;
+  }
+
   return (
     <div>
-      <h3 className="text-lg font-semibold text-[#1B4332] mb-4">
-        High-value customers churn less — but cost more to lose
+      <h3 className="text-base font-semibold text-[#1B4332] mb-4">
+        High-value customers churn less but cost more to lose
       </h3>
-      <ResponsiveContainer width="100%" height={320}>
-        <BarChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E8E8E8" />
-          <XAxis dataKey="segment" tick={{ fontSize: 12, fill: "#1B4332" }} />
+      <ResponsiveContainer width="100%" height={400}>
+        <ComposedChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+          <XAxis
+            dataKey="segment"
+            tick={{ fontSize: 12, fill: "#1B4332" }}
+            axisLine={false}
+            tickLine={false}
+          />
           <YAxis
             yAxisId="left"
-            tick={{ fontSize: 12, fill: "#1B4332" }}
+            tick={{ fontSize: 12, fill: "#6B7280" }}
+            axisLine={false}
+            tickLine={false}
             label={{
               value: "Avg CLV ($)",
               angle: -90,
               position: "insideLeft",
-              style: { fontSize: 12, fill: "#1B4332" },
+              style: { fontSize: 12, fill: "#6B7280" },
             }}
           />
           <YAxis
             yAxisId="right"
             orientation="right"
             domain={[0, 50]}
-            tick={{ fontSize: 12, fill: "#1B4332" }}
+            tick={{ fontSize: 12, fill: "#6B7280" }}
+            axisLine={false}
+            tickLine={false}
             label={{
               value: "Churn %",
               angle: 90,
               position: "insideRight",
-              style: { fontSize: 12, fill: "#1B4332" },
+              style: { fontSize: 12, fill: "#6B7280" },
             }}
           />
           <Tooltip
             contentStyle={{
               borderRadius: "8px",
-              border: "1px solid #B7E4C7",
+              border: "1px solid #D8F3DC",
+              fontSize: 13,
             }}
           />
           <Legend />
@@ -69,14 +82,16 @@ export default function CLVSegment({ data }: CLVSegmentProps) {
             fill="#2D6A4F"
             radius={[6, 6, 0, 0]}
           />
-          <Bar
+          <Line
             yAxisId="right"
+            type="monotone"
             dataKey="churn_pct"
             name="Churn Rate (%)"
-            fill="#D4A373"
-            radius={[6, 6, 0, 0]}
+            stroke="#E63946"
+            strokeWidth={2}
+            dot={{ r: 5, fill: "#E63946" }}
           />
-        </BarChart>
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );

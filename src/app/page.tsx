@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useDuckDB } from "@/hooks/useDuckDB";
+import { useDuckDB } from "@/lib/useDuckDB";
 import {
   KPI_QUERY,
-  COHORT_RETENTION_QUERY,
+  COHORT_QUERY,
   CLV_SEGMENT_QUERY,
   CHURN_HEATMAP_QUERY,
   SEGMENT_RECOMMENDATIONS_QUERY,
@@ -17,52 +17,37 @@ import SegmentTable from "@/components/SegmentTable";
 import SQLViewer from "@/components/SQLViewer";
 
 export default function Home() {
-  const { runQuery, loading, error, ready } = useDuckDB();
+  const { runQuery, loading, error } = useDuckDB();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [kpis, setKpis] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [cohorts, setCohorts] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [clvData, setClvData] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [heatmap, setHeatmap] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [segments, setSegments] = useState<any[]>([]);
+  const [kpi, setKpi] = useState<Record<string, unknown> | null>(null);
+  const [cohorts, setCohorts] = useState<Record<string, unknown>[]>([]);
+  const [clv, setClv] = useState<Record<string, unknown>[]>([]);
+  const [heatmap, setHeatmap] = useState<Record<string, unknown>[]>([]);
+  const [segments, setSegments] = useState<Record<string, unknown>[]>([]);
+  const [queryLoading, setQueryLoading] = useState(true);
 
   useEffect(() => {
-    if (!ready) return;
-
-    async function loadAll() {
-      const [kpiRes, cohortRes, clvRes, heatRes, segRes] = await Promise.all([
-        runQuery(KPI_QUERY),
-        runQuery(COHORT_RETENTION_QUERY),
-        runQuery(CLV_SEGMENT_QUERY),
-        runQuery(CHURN_HEATMAP_QUERY),
-        runQuery(SEGMENT_RECOMMENDATIONS_QUERY),
-      ]);
-      setKpis(kpiRes);
-      setCohorts(cohortRes);
-      setClvData(clvRes);
-      setHeatmap(heatRes);
-      setSegments(segRes);
+    if (loading) return;
+    if (error) {
+      setQueryLoading(false);
+      return;
     }
 
-    loadAll();
-  }, [ready, runQuery]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-4 border-[#52B788] border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-[#40916C] font-medium">
-            Initializing DuckDB and loading data...
-          </p>
-        </div>
-      </div>
-    );
-  }
+    Promise.all([
+      runQuery(KPI_QUERY),
+      runQuery(COHORT_QUERY),
+      runQuery(CLV_SEGMENT_QUERY),
+      runQuery(CHURN_HEATMAP_QUERY),
+      runQuery(SEGMENT_RECOMMENDATIONS_QUERY),
+    ]).then(([kpiRes, cohortRes, clvRes, heatRes, segRes]) => {
+      setKpi(kpiRes[0] ?? null);
+      setCohorts(cohortRes);
+      setClv(clvRes);
+      setHeatmap(heatRes);
+      setSegments(segRes);
+      setQueryLoading(false);
+    });
+  }, [loading, error, runQuery]);
 
   if (error) {
     return (
@@ -75,100 +60,90 @@ export default function Home() {
     );
   }
 
-  const kpiCards = kpis.length
-    ? [
-        {
-          label: "Total Customers",
-          value: Number(kpis[0].total_customers).toLocaleString(),
-        },
-        {
-          label: "Churn Rate",
-          value: `${kpis[0].churn_rate_pct}`,
-          unit: "%",
-        },
-        {
-          label: "Avg Monthly Revenue",
-          value: `$${kpis[0].avg_monthly_revenue}`,
-        },
-        {
-          label: "Avg Lifetime Value",
-          value: `$${Number(kpis[0].avg_lifetime_value).toLocaleString()}`,
-        },
-      ]
-    : [];
+  const isLoading = loading || queryLoading;
 
   return (
     <div className="max-w-[1200px] mx-auto px-6 py-10">
-      {/* Header */}
-      <header className="mb-10">
+      <header className="mb-12">
         <h1 className="text-3xl font-bold text-[#1B4332]">
           Customer Cohort & Lifetime Value Analysis
         </h1>
-        <p className="mt-2 text-[#40916C]">
-          Subscription churn analysis on telecom data. Approach directly
-          applicable to energy retail (tariff plans, billing cycles, add-on
-          products).
+        <p className="mt-2 text-gray-500">
+          Subscription churn analysis on customer data. Approach directly
+          applicable to energy retail — tariff plans, billing cycles, add-on
+          products.
         </p>
+        <span className="inline-block mt-3 text-xs px-3 py-1 rounded-full bg-[#F0FFF4] text-[#2D6A4F] border border-[#D8F3DC]">
+          SQL runs in your browser via DuckDB-WASM
+        </span>
       </header>
 
-      {/* KPIs */}
-      <section className="mb-10">
-        <KPICards data={kpiCards} />
+      <section className="mb-16">
+        <KPICards
+          data={
+            kpi
+              ? {
+                  total_customers: Number(kpi.total_customers),
+                  churn_rate_pct: Number(kpi.churn_rate_pct),
+                  avg_monthly_revenue: Number(kpi.avg_monthly_revenue),
+                  avg_lifetime_value: Number(kpi.avg_lifetime_value),
+                }
+              : null
+          }
+          loading={isLoading}
+        />
         <SQLViewer sql={KPI_QUERY} />
       </section>
 
-      {/* Cohort Retention */}
-      <section className="section-card mb-8">
-        <h2 className="text-xl font-bold text-[#1B4332] mb-2">
-          Where do we lose customers?
+      <section className="mb-16">
+        <h2 className="text-xl font-bold text-[#1B4332] mb-4">
+          Where in the lifecycle do we lose customers?
         </h2>
         <CohortChart
           data={cohorts.map((c) => ({
             tenure_cohort: String(c.tenure_cohort),
             retention_pct: Number(c.retention_pct),
             customers: Number(c.customers),
-            churned: Number(c.churned),
           }))}
+          loading={isLoading}
         />
-        <SQLViewer sql={COHORT_RETENTION_QUERY} />
+        <SQLViewer sql={COHORT_QUERY} />
       </section>
 
-      {/* CLV Segments */}
-      <section className="section-card mb-8">
-        <h2 className="text-xl font-bold text-[#1B4332] mb-2">
+      <section className="mb-16">
+        <h2 className="text-xl font-bold text-[#1B4332] mb-4">
           Which customers are worth the most?
         </h2>
         <CLVSegment
-          data={clvData.map((d) => ({
+          data={clv.map((d) => ({
             segment: String(d.segment),
-            customers: Number(d.customers),
             avg_clv: Number(d.avg_clv),
-            avg_monthly: Number(d.avg_monthly),
             churn_pct: Number(d.churn_pct),
+            customers: Number(d.customers),
           }))}
+          loading={isLoading}
         />
         <SQLViewer sql={CLV_SEGMENT_QUERY} />
       </section>
 
-      {/* Churn Heatmap */}
-      <section className="section-card mb-8">
-        <h2 className="text-xl font-bold text-[#1B4332] mb-2">
+      <section className="mb-16">
+        <h2 className="text-xl font-bold text-[#1B4332] mb-4">
           Where does churn concentrate?
         </h2>
         <ChurnHeatmap
           data={heatmap.map((d) => ({
             Contract: String(d.Contract),
             PaymentMethod: String(d.PaymentMethod),
-            customers: Number(d.customers),
             churn_pct: Number(d.churn_pct),
+            customers: Number(d.customers),
           }))}
+          loading={isLoading}
         />
         <SQLViewer sql={CHURN_HEATMAP_QUERY} />
       </section>
 
-      {/* Segment Recommendations */}
-      <section className="section-card mb-8">
-        <h2 className="text-xl font-bold text-[#1B4332] mb-2">
+      <section className="mb-16">
+        <h2 className="text-xl font-bold text-[#1B4332] mb-4">
           Segment recommendations
         </h2>
         <SegmentTable
@@ -179,23 +154,33 @@ export default function Home() {
             churn_pct: Number(d.churn_pct),
             avg_monthly: Number(d.avg_monthly),
           }))}
+          loading={isLoading}
         />
         <SQLViewer sql={SEGMENT_RECOMMENDATIONS_QUERY} />
       </section>
 
-      {/* Footer */}
-      <footer className="mt-12 pt-6 border-t border-[#B7E4C7] text-center text-sm text-[#40916C]">
-        Built by Uttam Darekar | SQL, DuckDB-WASM, Next.js, Recharts, Tailwind
-        CSS
-        {" · "}
-        <a
-          href="https://github.com/uttam1297/customer-cohort-analysis"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline hover:text-[#1B4332]"
-        >
-          GitHub
-        </a>
+      <footer className="pt-8 border-t border-gray-200 text-center text-sm text-gray-400">
+        <p>
+          Built by Uttam Darekar{" "}
+          <a
+            href="https://github.com/uttam1297/customer-cohort-analysis"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-[#1B4332]"
+          >
+            GitHub
+          </a>
+          {" · "}
+          <a
+            href="https://linkedin.com/in/uttamdarekar"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-[#1B4332]"
+          >
+            LinkedIn
+          </a>
+        </p>
+        <p className="mt-1">Data: IBM Telco Customer Churn (Kaggle)</p>
       </footer>
     </div>
   );
