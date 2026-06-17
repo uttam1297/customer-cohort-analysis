@@ -22,26 +22,15 @@ export function useDuckDB(): UseDuckDBReturn {
 
     async function init() {
       try {
+        const DUCKDB_CDN = "https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.33.1-dev45.0/dist";
         const DUCKDB_BUNDLES = await duckdb.selectBundle({
           mvp: {
-            mainModule: new URL(
-              "@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm",
-              import.meta.url
-            ).href,
-            mainWorker: new URL(
-              "@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js",
-              import.meta.url
-            ).href,
+            mainModule: `${DUCKDB_CDN}/duckdb-mvp.wasm`,
+            mainWorker: `${DUCKDB_CDN}/duckdb-browser-mvp.worker.js`,
           },
           eh: {
-            mainModule: new URL(
-              "@duckdb/duckdb-wasm/dist/duckdb-eh.wasm",
-              import.meta.url
-            ).href,
-            mainWorker: new URL(
-              "@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js",
-              import.meta.url
-            ).href,
+            mainModule: `${DUCKDB_CDN}/duckdb-eh.wasm`,
+            mainWorker: `${DUCKDB_CDN}/duckdb-browser-eh.worker.js`,
           },
         });
 
