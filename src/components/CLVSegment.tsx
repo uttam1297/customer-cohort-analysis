@@ -25,19 +25,19 @@ interface CLVSegmentProps {
 
 export default function CLVSegment({ data, loading }: CLVSegmentProps) {
   if (loading) {
-    return <div className="h-[400px] bg-[#F0FFF4] animate-pulse rounded-xl" />;
+    return <div className="h-[400px] bg-[#F5F3FF] animate-pulse rounded-xl" />;
   }
 
   return (
     <div>
-      <h3 className="text-base font-semibold text-[#1B4332] mb-4">
+      <h3 className="text-base font-semibold text-[#3B0764] mb-4">
         High-value customers churn less but cost more to lose
       </h3>
       <ResponsiveContainer width="100%" height={400}>
         <ComposedChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
           <XAxis
             dataKey="segment"
-            tick={{ fontSize: 12, fill: "#1B4332" }}
+            tick={{ fontSize: 12, fill: "#3B0764" }}
             axisLine={false}
             tickLine={false}
           />
@@ -70,7 +70,7 @@ export default function CLVSegment({ data, loading }: CLVSegmentProps) {
           <Tooltip
             contentStyle={{
               borderRadius: "8px",
-              border: "1px solid #D8F3DC",
+              border: "1px solid #DDD6FE",
               fontSize: 13,
             }}
           />
@@ -79,7 +79,7 @@ export default function CLVSegment({ data, loading }: CLVSegmentProps) {
             yAxisId="left"
             dataKey="avg_clv"
             name="Avg CLV ($)"
-            fill="#2D6A4F"
+            fill="#7C3AED"
             radius={[6, 6, 0, 0]}
           />
           <Line

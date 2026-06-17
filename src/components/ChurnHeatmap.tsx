@@ -14,15 +14,16 @@ interface ChurnHeatmapProps {
 
 function interpolateColor(pct: number, min: number, max: number): string {
   const t = max === min ? 0.5 : (pct - min) / (max - min);
-  const r = Math.round(149 + (230 - 149) * t);
-  const g = Math.round(213 + (57 - 213) * t);
-  const b = Math.round(178 + (70 - 178) * t);
+  // purple (low churn) → red (high churn)
+  const r = Math.round(167 + (230 - 167) * t);
+  const g = Math.round(139 + (57 - 139) * t);
+  const b = Math.round(250 + (70 - 250) * t);
   return `rgb(${r}, ${g}, ${b})`;
 }
 
 export default function ChurnHeatmap({ data, loading }: ChurnHeatmapProps) {
   if (loading) {
-    return <div className="h-[300px] bg-[#F0FFF4] animate-pulse rounded-xl" />;
+    return <div className="h-[300px] bg-[#F5F3FF] animate-pulse rounded-xl" />;
   }
 
   const contracts = ["Month-to-month", "One year", "Two year"];
@@ -34,21 +35,18 @@ export default function ChurnHeatmap({ data, loading }: ChurnHeatmapProps) {
 
   return (
     <div>
-      <h3 className="text-base font-semibold text-[#1B4332] mb-4">
+      <h3 className="text-base font-semibold text-[#3B0764] mb-4">
         Month-to-month contracts with electronic check payments are the highest risk
       </h3>
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-collapse rounded-xl overflow-hidden">
           <thead>
             <tr>
-              <th className="text-left p-3 text-[#1B4332] font-semibold bg-[#F0FFF4]">
+              <th className="text-left p-3 text-[#3B0764] font-semibold bg-[#F5F3FF]">
                 Contract
               </th>
               {methods.map((m) => (
-                <th
-                  key={m}
-                  className="text-center p-3 text-[#1B4332] font-semibold bg-[#F0FFF4] text-xs"
-                >
+                <th key={m} className="text-center p-3 text-[#3B0764] font-semibold bg-[#F5F3FF] text-xs">
                   {m}
                 </th>
               ))}
@@ -57,7 +55,7 @@ export default function ChurnHeatmap({ data, loading }: ChurnHeatmapProps) {
           <tbody>
             {contracts.map((c) => (
               <tr key={c}>
-                <td className="p-3 font-medium text-[#1B4332] border-t border-gray-100">
+                <td className="p-3 font-medium text-[#3B0764] border-t border-gray-100">
                   {c}
                 </td>
                 {methods.map((m) => {

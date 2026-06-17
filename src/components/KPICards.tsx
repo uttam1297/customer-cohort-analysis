@@ -14,18 +14,18 @@ interface KPICardsProps {
 
 function Skeleton() {
   return (
-    <div className="animate-pulse rounded-xl bg-[#F0FFF4] border border-[#D8F3DC] p-6 shadow-sm">
-      <div className="h-3 w-20 bg-[#D8F3DC] rounded mb-3" />
-      <div className="h-8 w-28 bg-[#D8F3DC] rounded" />
+    <div className="animate-pulse rounded-xl bg-[#F5F3FF] border border-[#DDD6FE] p-6 shadow-sm">
+      <div className="h-3 w-20 bg-[#DDD6FE] rounded mb-3" />
+      <div className="h-8 w-28 bg-[#DDD6FE] rounded" />
     </div>
   );
 }
 
-const cards: { key: keyof KPIData; label: string; format: (v: number) => string }[] = [
-  { key: "total_customers", label: "TOTAL CUSTOMERS", format: (v) => v.toLocaleString() },
-  { key: "churn_rate_pct", label: "CHURN RATE", format: (v) => `${v}%` },
-  { key: "avg_monthly_revenue", label: "AVG MONTHLY REVENUE", format: (v) => `$${v.toFixed(2)}` },
-  { key: "avg_lifetime_value", label: "AVG LIFETIME VALUE", format: (v) => `$${v.toLocaleString()}` },
+const cards: { key: keyof KPIData; label: string; format: (v: number) => string; sub?: string }[] = [
+  { key: "total_customers", label: "Total Customers", format: (v) => v.toLocaleString() },
+  { key: "churn_rate_pct", label: "Churn Rate", format: (v) => `${v}%` },
+  { key: "avg_monthly_revenue", label: "Avg Monthly Revenue", format: (v) => `$${v.toFixed(2)}`, sub: "per customer / month" },
+  { key: "avg_lifetime_value", label: "Avg Lifetime Value", format: (v) => `$${Number(v.toFixed(0)).toLocaleString()}`, sub: "total spend per customer" },
 ];
 
 export default function KPICards({ data, loading }: KPICardsProps) {
@@ -42,14 +42,17 @@ export default function KPICards({ data, loading }: KPICardsProps) {
       {cards.map((c) => (
         <div
           key={c.key}
-          className="rounded-xl bg-[#F0FFF4] border border-[#D8F3DC] p-6 shadow-sm"
+          className="rounded-xl bg-[#F5F3FF] border border-[#DDD6FE] p-6 shadow-sm"
         >
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+          <p className="text-xs font-medium text-[#7C3AED] uppercase tracking-wide">
             {c.label}
           </p>
-          <p className="mt-2 text-2xl font-bold text-[#1B4332]">
+          <p className="mt-2 text-2xl font-bold text-[#3B0764]">
             {c.format(Number(data[c.key]))}
           </p>
+          {c.sub && (
+            <p className="mt-1 text-xs text-gray-400">{c.sub}</p>
+          )}
         </div>
       ))}
     </div>

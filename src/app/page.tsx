@@ -65,7 +65,7 @@ export default function Home() {
   return (
     <div className="max-w-[1200px] mx-auto px-6 py-10">
       <header className="mb-12">
-        <h1 className="text-3xl font-bold text-[#1B4332]">
+        <h1 className="text-3xl font-bold text-[#3B0764]">
           Customer Cohort & Lifetime Value Analysis
         </h1>
         <p className="mt-2 text-gray-500">
@@ -73,7 +73,7 @@ export default function Home() {
           applicable to energy retail — tariff plans, billing cycles, add-on
           products.
         </p>
-        <span className="inline-block mt-3 text-xs px-3 py-1 rounded-full bg-[#F0FFF4] text-[#2D6A4F] border border-[#D8F3DC]">
+        <span className="inline-block mt-3 text-xs px-3 py-1 rounded-full bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE]">
           SQL runs in your browser via DuckDB-WASM
         </span>
       </header>
@@ -96,7 +96,7 @@ export default function Home() {
       </section>
 
       <section className="mb-16">
-        <h2 className="text-xl font-bold text-[#1B4332] mb-4">
+        <h2 className="text-xl font-bold text-[#3B0764] mb-4">
           Where in the lifecycle do we lose customers?
         </h2>
         <CohortChart
@@ -111,7 +111,7 @@ export default function Home() {
       </section>
 
       <section className="mb-16">
-        <h2 className="text-xl font-bold text-[#1B4332] mb-4">
+        <h2 className="text-xl font-bold text-[#3B0764] mb-4">
           Which customers are worth the most?
         </h2>
         <CLVSegment
@@ -127,7 +127,7 @@ export default function Home() {
       </section>
 
       <section className="mb-16">
-        <h2 className="text-xl font-bold text-[#1B4332] mb-4">
+        <h2 className="text-xl font-bold text-[#3B0764] mb-4">
           Where does churn concentrate?
         </h2>
         <ChurnHeatmap
@@ -143,7 +143,7 @@ export default function Home() {
       </section>
 
       <section className="mb-16">
-        <h2 className="text-xl font-bold text-[#1B4332] mb-4">
+        <h2 className="text-xl font-bold text-[#3B0764] mb-4">
           Segment recommendations
         </h2>
         <SegmentTable
@@ -166,7 +166,7 @@ export default function Home() {
             href="https://github.com/uttam1297/customer-cohort-analysis"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-[#1B4332]"
+            className="underline hover:text-[#3B0764]"
           >
             GitHub
           </a>
@@ -175,7 +175,7 @@ export default function Home() {
             href="https://linkedin.com/in/uttamdarekar"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-[#1B4332]"
+            className="underline hover:text-[#3B0764]"
           >
             LinkedIn
           </a>
