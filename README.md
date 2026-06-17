@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Customer Cohort & Lifetime Value Analysis
 
-## Getting Started
+A browser-based dashboard that digs into customer churn using telecom subscription data. No backend, no server. DuckDB-WASM runs all the SQL queries client-side.
 
-First, run the development server:
+## What it does
+
+- Loads 7,000+ telecom customer records and queries them with SQL, all in the browser
+- Shows the big numbers up front: churn rate, average revenue, customer lifetime value
+- Groups customers by how long they've been around and plots retention over time
+- Breaks customers into value segments (spend x tenure) to see where churn hurts most
+- Maps churn rates across contract types and payment methods in a heatmap
+- Suggests what to do about each segment, based on what the numbers say
+
+## Key findings
+
+- New customers (first 3 months) churn about 3x faster than long-tenure ones
+- Month-to-month contracts paid by electronic check are the worst churn pocket
+- Losing a high-value customer costs a lot more, even though they churn less often
+- Getting customers onto annual contracts early makes a real difference in retention
+
+## How to run it
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). DuckDB takes a few seconds to initialize, then everything loads.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Built with
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Next.js · TypeScript · Tailwind CSS · DuckDB-WASM · Recharts · Telco Customer Churn dataset (IBM)
 
-## Learn More
+## Author
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Uttam Darekar · [GitHub](https://github.com/uttam1297)
