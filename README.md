@@ -1,36 +1,23 @@
+[![Data Validation](https://github.com/uttam1297/customer-cohort-analysis/actions/workflows/data-validation.yml/badge.svg)](https://github.com/uttam1297/customer-cohort-analysis/actions/workflows/data-validation.yml)
+[![SQL Tests](https://github.com/uttam1297/customer-cohort-analysis/actions/workflows/sql-tests.yml/badge.svg)](https://github.com/uttam1297/customer-cohort-analysis/actions/workflows/sql-tests.yml)
+[![Build](https://github.com/uttam1297/customer-cohort-analysis/actions/workflows/build.yml/badge.svg)](https://github.com/uttam1297/customer-cohort-analysis/actions/workflows/build.yml)
+
 # Customer Cohort & Lifetime Value Analysis
 
-A browser-based dashboard that digs into customer churn using telecom subscription data. No backend, no server. DuckDB-WASM runs all the SQL queries client-side.
+Live dashboard: https://customer-cohort-analysis.vercel.app
 
-## What it does
+## Why this project
 
-- Loads 7,000+ telecom customer records and queries them with SQL, all in the browser
-- Shows the big numbers up front: churn rate, average revenue, customer lifetime value
-- Groups customers by how long they've been around and plots retention over time
-- Breaks customers into value segments (spend x tenure) to see where churn hurts most
-- Maps churn rates across contract types and payment methods in a heatmap
-- Suggests what to do about each segment, based on what the numbers say
+Every subscription business asks the same questions: where do we lose customers, who is worth the most, and what should we do about it. This project answers them with SQL on real telecom churn data. The same cohort and CLV approach applies directly to energy retail, where tariff plans, billing cycles, and add-on products follow identical patterns.
 
-## Key findings
+## Approach
 
-- New customers (first 3 months) churn about 3x faster than long-tenure ones
-- Month-to-month contracts paid by electronic check are the worst churn pocket
-- Losing a high-value customer costs a lot more, even though they churn less often
-- Getting customers onto annual contracts early makes a real difference in retention
+SQL-first analysis running entirely in the browser via DuckDB-WASM. No backend, no API calls. Tenure-based cohort retention, CLV segmentation using NTILE, churn risk profiling across contract and payment dimensions, and actionable segment recommendations.
 
-## How to run it
+## Tools
 
-```bash
-npm install
-npm run dev
-```
+Next.js, TypeScript, DuckDB-WASM, Recharts, Tailwind CSS, GitHub Actions, Vercel
 
-Open [http://localhost:3000](http://localhost:3000). DuckDB takes a few seconds to initialize, then everything loads.
+## Data
 
-## Built with
-
-Next.js · TypeScript · Tailwind CSS · DuckDB-WASM · Recharts · Telco Customer Churn dataset (IBM)
-
-## Author
-
-Uttam Darekar · [GitHub](https://github.com/uttam1297)
+IBM Telco Customer Churn dataset, 7,043 customers, 21 features. Source: Kaggle.

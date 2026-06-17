@@ -1,14 +1,13 @@
 export const KPI_QUERY = `
 SELECT
   COUNT(*) AS total_customers,
-  ROUND(AVG(CASE WHEN Churn='Yes' THEN 1 ELSE 0 END)*100, 1) AS churn_rate_pct,
+  ROUND(AVG(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) * 100, 1) AS churn_rate_pct,
   ROUND(AVG(MonthlyCharges), 2) AS avg_monthly_revenue,
-  ROUND(AVG(CAST(TotalCharges AS DOUBLE) / NULLIF(tenure, 0)), 2) AS avg_revenue_per_month,
-  ROUND(AVG(CAST(TotalCharges AS DOUBLE)), 2) AS avg_lifetime_value
+  ROUND(AVG(TotalCharges), 2) AS avg_lifetime_value
 FROM customers
 `;
 
-export const COHORT_RETENTION_QUERY = `
+export const COHORT_QUERY = `
 WITH cohorts AS (
   SELECT
     customerID,
@@ -33,8 +32,8 @@ SELECT
   tenure_cohort,
   cohort_order,
   COUNT(*) AS customers,
-  SUM(CASE WHEN Churn='Yes' THEN 1 ELSE 0 END) AS churned,
-  ROUND(AVG(CASE WHEN Churn='No' THEN 1 ELSE 0 END)*100, 1) AS retention_pct
+  SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS churned,
+  ROUND(AVG(CASE WHEN Churn = 'No' THEN 1 ELSE 0 END) * 100, 1) AS retention_pct
 FROM cohorts
 GROUP BY tenure_cohort, cohort_order
 ORDER BY cohort_order
@@ -44,12 +43,10 @@ export const CLV_SEGMENT_QUERY = `
 WITH clv AS (
   SELECT
     customerID,
-    Contract,
+    TotalCharges AS lifetime_value,
     MonthlyCharges,
-    tenure,
-    CAST(TotalCharges AS DOUBLE) AS lifetime_value,
     Churn,
-    NTILE(3) OVER (ORDER BY CAST(TotalCharges AS DOUBLE)) AS value_tier
+    NTILE(3) OVER (ORDER BY TotalCharges) AS value_tier
   FROM customers
   WHERE tenure > 0
 )
@@ -62,7 +59,7 @@ SELECT
   COUNT(*) AS customers,
   ROUND(AVG(lifetime_value), 2) AS avg_clv,
   ROUND(AVG(MonthlyCharges), 2) AS avg_monthly,
-  ROUND(AVG(CASE WHEN Churn='Yes' THEN 1 ELSE 0 END)*100, 1) AS churn_pct
+  ROUND(AVG(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) * 100, 1) AS churn_pct
 FROM clv
 GROUP BY value_tier
 ORDER BY value_tier
@@ -73,7 +70,7 @@ SELECT
   Contract,
   PaymentMethod,
   COUNT(*) AS customers,
-  ROUND(AVG(CASE WHEN Churn='Yes' THEN 1 ELSE 0 END)*100, 1) AS churn_pct
+  ROUND(AVG(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) * 100, 1) AS churn_pct
 FROM customers
 GROUP BY Contract, PaymentMethod
 ORDER BY churn_pct DESC
@@ -86,13 +83,13 @@ WITH segments AS (
     Contract,
     tenure,
     MonthlyCharges,
-    CAST(TotalCharges AS DOUBLE) AS lifetime_value,
+    TotalCharges AS lifetime_value,
     Churn,
     CASE
-      WHEN tenure <= 6 AND Churn='No' THEN 'New and Vulnerable'
-      WHEN CAST(TotalCharges AS DOUBLE) > 3000 AND Churn='No' THEN 'Loyal High Value'
-      WHEN CAST(TotalCharges AS DOUBLE) > 3000 AND Churn='Yes' THEN 'High Value at Risk'
-      WHEN Contract='Month-to-month' AND Churn='No' THEN 'Flexible and Uncommitted'
+      WHEN tenure <= 6 AND Churn = 'No' THEN 'New and Vulnerable'
+      WHEN TotalCharges > 3000 AND Churn = 'Yes' THEN 'High Value at Risk'
+      WHEN TotalCharges > 3000 AND Churn = 'No' THEN 'Loyal High Value'
+      WHEN Contract = 'Month-to-month' AND Churn = 'No' THEN 'Flexible Uncommitted'
       ELSE 'General Base'
     END AS segment_name
   FROM customers
@@ -102,7 +99,7 @@ SELECT
   segment_name,
   COUNT(*) AS customers,
   ROUND(AVG(lifetime_value), 2) AS avg_clv,
-  ROUND(AVG(CASE WHEN Churn='Yes' THEN 1 ELSE 0 END)*100, 1) AS churn_pct,
+  ROUND(AVG(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) * 100, 1) AS churn_pct,
   ROUND(AVG(MonthlyCharges), 2) AS avg_monthly
 FROM segments
 GROUP BY segment_name

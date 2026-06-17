@@ -4,25 +4,28 @@ import { useState } from "react";
 
 interface SQLViewerProps {
   sql: string;
+  title?: string;
 }
 
-export default function SQLViewer({ sql }: SQLViewerProps) {
+export default function SQLViewer({ sql, title }: SQLViewerProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <div className="mt-3">
       <button
         onClick={() => setOpen(!open)}
-        className="text-sm text-[#40916C] hover:text-[#2D6A4F] font-medium flex items-center gap-1 cursor-pointer"
+        className="text-xs text-gray-400 hover:text-gray-600 font-medium cursor-pointer"
       >
-        <span className="text-xs">{open ? "▼" : "▶"}</span>
         {open ? "Hide SQL" : "Show SQL"}
+        {title && ` — ${title}`}
       </button>
-      {open && (
-        <pre className="mt-2 p-4 bg-[#F5F5F5] rounded-lg text-xs font-mono text-[#1a1a1a] overflow-x-auto border border-[#E8E8E8]">
+      <div
+        className={`overflow-hidden transition-all duration-200 ${open ? "max-h-[600px] mt-2" : "max-h-0"}`}
+      >
+        <pre className="p-4 bg-[#F8F9FA] rounded-lg text-xs font-mono text-gray-700 overflow-x-auto whitespace-pre-wrap">
           <code>{sql.trim()}</code>
         </pre>
-      )}
+      </div>
     </div>
   );
 }
