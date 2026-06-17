@@ -34,7 +34,11 @@ export function useDuckDB(): UseDuckDBReturn {
           },
         });
 
-        const worker = new Worker(DUCKDB_BUNDLES.mainWorker!);
+        // Cross-origin workers need blob URL workaround
+        const workerScript = await fetch(DUCKDB_BUNDLES.mainWorker!).then(r => r.text());
+        const workerBlob = new Blob([workerScript], { type: "application/javascript" });
+        const workerUrl = URL.createObjectURL(workerBlob);
+        const worker = new Worker(workerUrl);
         const logger = new duckdb.ConsoleLogger();
         const db = new duckdb.AsyncDuckDB(logger, worker);
         await db.instantiate(DUCKDB_BUNDLES.mainModule);
