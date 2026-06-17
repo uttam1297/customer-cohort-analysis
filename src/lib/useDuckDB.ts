@@ -48,18 +48,8 @@ async function initDuckDB() {
   await db.registerFileText("telco_churn.csv", csvText);
   await conn.query(`
     CREATE TABLE customers AS
-    SELECT
-      *,
-      CAST(
-        CASE WHEN TRIM(TotalCharges) = '' THEN '0' ELSE TotalCharges END
-        AS DOUBLE
-      ) AS TotalCharges_clean
-    FROM read_csv_auto('telco_churn.csv')
+    SELECT * FROM read_csv_auto('telco_churn.csv')
   `);
-  await conn.query(`ALTER TABLE customers DROP COLUMN TotalCharges`);
-  await conn.query(
-    `ALTER TABLE customers RENAME COLUMN TotalCharges_clean TO TotalCharges`
-  );
 
   singletonDb = db;
   singletonConn = conn;
